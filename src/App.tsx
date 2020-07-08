@@ -1,26 +1,47 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect} from 'react';
+import ListOfProducts from "./ListOfProducts";
+import Inventory from "./Inventory";
+import ShoppingCart from "./ShoppingCart";
+import {Container, Grid} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
 import './App.css';
+import {useDispatch} from "react-redux";
+import {fetchProducts} from "./store/thunk";
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        flexGrow: 1,
+        marginTop: 100,
+    },
+
+    control: {
+        padding: theme.spacing(2),
+    },
+}));
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    useEffect(()=>{
+        dispatch(fetchProducts())
+    },[dispatch])
+    return (
+            <div className="App">
+                <Container fixed>
+                    <Grid container className={classes.root} justify="center" spacing={2}>
+                            <Grid item>
+                                <ListOfProducts />
+                            </Grid>
+                            <Grid item>
+                                <ShoppingCart />
+                            </Grid>
+                            <Grid item>
+                                <Inventory />
+                            </Grid>
+                    </Grid>
+                </Container>
+            </div>
   );
 }
+
 
 export default App;
