@@ -1,12 +1,11 @@
 import React, {useEffect} from 'react';
-import ListOfProducts from "./ListOfProducts";
-import Inventory from "./Inventory";
-import ShoppingCart from "./ShoppingCart";
-import {Container, Grid} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
-import './App.css';
-import {useDispatch} from "react-redux";
-import {fetchProducts} from "./store/thunk";
+import ListOfProducts from './ListOfProducts';
+import Inventory from './Inventory';
+import ShoppingCart from './ShoppingCart';
+import {Container, Grid} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles';
+import {useDispatch} from 'react-redux';
+import {fetchProducts} from './store/thunk';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -21,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 function App() {
     const classes = useStyles();
     const dispatch = useDispatch();
-    useEffect(()=>{
+    useEffect(() => {
         dispatch(fetchProducts())
     },[dispatch])
     return (

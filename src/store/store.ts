@@ -24,27 +24,26 @@ const inventorySlice = createSlice({
             const products: INormalizedProductsObject = {};
             state.productIDs = payload.map(product=>{
                 products[product.id] = product;
-                return product.id
+                return product.id;
             });
             state.products =  products;
         },
-        addProductToInventory(state, action: PayloadAction<Omit <IProduct,'id'> >){
 
+        addProductToInventory(state, action: PayloadAction<Omit <IProduct,'id'> >){
             let id = state.productIDs[state.productIDs.length -1 ] + 1;
             while(state.productIDs.indexOf(id) !== -1){
-                id++
+                id++;
             }
-            const product = {id, ...action.payload}
+            const product = {id, ...action.payload};
 
             state.productIDs.push(id);
             state.products[id] = product;
-
         },
 
         deleteProductFromInventory(state, action: PayloadAction<number>){
            const {payload} = action;
            state.productIDs = state.productIDs.filter(item=>item !== payload);
-           delete state.products[payload]
+           delete state.products[payload];
         },
 
         editProductInInventory(state, action: PayloadAction<TProductsEditPayload>){
@@ -57,7 +56,7 @@ const inventorySlice = createSlice({
 });
 
 
-const initialCartState: ICartState = {}
+const initialCartState: ICartState = {};
 
 const cartSlice = createSlice({
     name: 'cartSlice',
@@ -75,7 +74,7 @@ const cartSlice = createSlice({
         deleteItemFromCart(state, action: PayloadAction<number>){
             const { payload} = action;
             if(!!state[payload]){
-                delete state[payload]
+                delete state[payload];
             }
         },
 
@@ -83,17 +82,16 @@ const cartSlice = createSlice({
             const {id, isAdding} = action.payload;
             const corrector: number = isAdding ? 1 : -1;
             if(!!state[id]){
-                state[id] += corrector
+                state[id] += corrector;
             }
-
         }
     }
-})
+});
 
 const rootReducer = combineReducers({
     inventory: inventorySlice.reducer,
     cart: cartSlice.reducer,
-})
+});
 
 export const {
     actions: {
@@ -108,13 +106,13 @@ export const {
     actions: {
         addItemToCart,
         deleteItemFromCart,
-        editQuantityOfItemInCart
+        editQuantityOfItemInCart,
     }
-} = cartSlice
+} = cartSlice;
 
 
 export const store = configureStore({
-    reducer: rootReducer
-})
+    reducer: rootReducer,
+});
 
 export type RootState = ReturnType<typeof rootReducer>
