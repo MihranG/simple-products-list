@@ -9,6 +9,8 @@ const useStyles = makeStyles((theme)=>({
     paper:{
         height: 'auto',
         width: 350,
+        maxHeight: '600',
+        overflowX: 'scroll'
     }
 }))
 
@@ -24,7 +26,7 @@ const ShoppingCart: React.FC<{}> = ()=>{
     const classes = useStyles();
     let total = 0;
     const shoppingCart: IShoppingCartItem[] = useSelector((state: RootState)=> {
-        return Object.keys(state.cart).map(itemID=>{
+        return Object.keys(state.cart).map((itemID, index, arr)=>{
             const product = state.inventory.products[itemID];
             total+= state.cart[itemID] * product.price;
             const id = parseInt(itemID);
@@ -39,7 +41,7 @@ const ShoppingCart: React.FC<{}> = ()=>{
                 Shopping Cart
             </Typography>
             {shoppingCart.map((cartItem, index)=>(
-               <ShoppingCartItem cartItem={cartItem} key={`${index}_${cartItem.id}`}/>
+               <ShoppingCartItem cartItem={cartItem} key={`${index}_${cartItem.id}_${cartItem.title}`}/>
             ))}
             <Typography variant="h6">
                 Total: {total + '$'}

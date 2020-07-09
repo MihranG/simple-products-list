@@ -9,10 +9,12 @@ import {IShoppingCartItem} from "./ShoppingCart";
 const useStyles = makeStyles((theme)=>({
     row: {
         display: "flex",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
     },
     card: {
         display: 'flex',
+        marginTop: "5px"
+
     },
     cardContent: {
         width: '100%'
@@ -25,7 +27,7 @@ const ShoppingCartItem: React.FC<{ cartItem: IShoppingCartItem }> = ({cartItem})
     const {title, id, price, qty} = cartItem;
 
     return (
-        <Card className={classes.card}>
+        <Card className={classes.card} elevation={2}>
             <CardContent className={classes.cardContent}>
                 <div className={classes.row}>
                     <Typography variant="h6" >

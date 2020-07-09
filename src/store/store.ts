@@ -1,9 +1,7 @@
 import {configureStore, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import { combineReducers } from 'redux';
-import { reducer as formReducer } from 'redux-form'
 
 import {
-    ICartItem,
     ICartState,
     INormalizedProductsObject,
     IProduct,
@@ -30,12 +28,17 @@ const inventorySlice = createSlice({
             });
             state.products =  products;
         },
-        addProductToInventory(state, action: PayloadAction<IProduct>){
-            const {id} = action.payload;
-            if(state.productIDs.indexOf(id) !== -1){
-                state.productIDs.push(id);
-                state.products[id] = action.payload;
+        addProductToInventory(state, action: PayloadAction<Omit <IProduct,'id'> >){
+
+            let id = state.productIDs[state.productIDs.length -1 ] + 1;
+            while(state.productIDs.indexOf(id) !== -1){
+                id++
             }
+            const product = {id, ...action.payload}
+
+            state.productIDs.push(id);
+            state.products[id] = product;
+
         },
 
         deleteProductFromInventory(state, action: PayloadAction<number>){
@@ -44,7 +47,7 @@ const inventorySlice = createSlice({
            delete state.products[payload]
         },
 
-        editProduct(state, action: PayloadAction<TProductsEditPayload>){
+        editProductInInventory(state, action: PayloadAction<TProductsEditPayload>){
             const {id} = action.payload;
             if(state.productIDs.indexOf(id) !== -1){
                 state.products[id] = {...state.products[id], ...action.payload};
@@ -90,14 +93,13 @@ const cartSlice = createSlice({
 const rootReducer = combineReducers({
     inventory: inventorySlice.reducer,
     cart: cartSlice.reducer,
-    form: formReducer
 })
 
 export const {
     actions: {
         addProductToInventory,
         bulkAddProducts,
-        editProduct,
+        editProductInInventory,
         deleteProductFromInventory
     }
 } = inventorySlice;

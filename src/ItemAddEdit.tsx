@@ -1,16 +1,29 @@
-import React, {SyntheticEvent} from 'react';
-import {Card, TextField} from "@material-ui/core";
+import React, {SyntheticEvent, useState} from 'react';
+import {Card, TextField, CardContent, CardActions, Button, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import {Field, FormErrors, InjectedFormProps, reduxForm} from 'redux-form';
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {addProductToInventory,editProductInInventory, RootState} from "./store/store";
 
 const useStyles = makeStyles((theme)=>({
     root: {
         minWidth: 275,
         display: "flex",
-        margin: '5px 0',
         justifyContent: "space-around"
     },
+    row: {
+        justifyContent: "space-between",
+        display: "flex"
+    },
+    priceField: {
+        width: 70
+    },
+    titleField: {
+        width: 220
+    },
+    buttonsWrapper: {
+        justifyContent: 'center'
+    }
+
 }))
 
 interface IFormData {
@@ -20,94 +33,133 @@ interface IFormData {
     imageUrl: string
 }
 
+const initialFormData : IFormData = {
+    title: '',
+    price: 0,
+    description: '',
+    imageUrl: ''
+}
+
 interface IOwnProps {
-    id : number
+    id : number| null;
+    cancelHandler: ()=>void;
 }
 
 
-const ItemAddEdit: React.FC<InjectedFormProps<IFormData, IOwnProps> & IOwnProps > = (props)=>{
+const ItemAddEdit: React.FC<IOwnProps > = ({id,cancelHandler})=>{
     const classes = useStyles();
     const dispatch = useDispatch();
+    const isAdd = id === null;
+    const formValues = useSelector<RootState, IFormData >((state)=>{
+        if(id === null){
+            return initialFormData;
+        }
+        return state.inventory.products[id];
+    });
+    const [formData, setFormData] = useState<IFormData>(formValues);
+
+    const handleChange = (value: string, type: string)=>{
+        setFormData({
+            ...formData,
+            [type]: value
+        })
+    }
     const handleSubmit = (e:SyntheticEvent)=>{
-        e.preventDefault()
-        console.log('handle');
-        // dispatch(addProductToInventory(product))
+        e.preventDefault();
+        if(id === null){
+            dispatch(addProductToInventory(formData));
+        }else{
+            dispatch(editProductInInventory({id,...formData}))
+        }
     }
 
-
-    const renderInputField = (field: any)=>{
-        const { meta: { touched, error } } = field;
-
-        const isContentInput = field.label === 'Content';
-        return(
-            <div className="input-wrapper">
-                <label htmlFor="Title">{ field.label }</label>
-
-                {isContentInput ?
-                    <textarea
-                        type={ 'text'}
-                        {...field.input} />
-                    :<input
-                        className="input-field"
-                        type={ 'text'}
-                        {...field.input}
-                    />}
-                <div className="error-message">
-                    {touched ? error : ''}
-                </div>
-            </div>
-        )
-    }
     return(
-        <Card  className={classes.root}>
-            <form onSubmit={handleSubmit}>
-                <Field
-                    label="Title"
-                    name="title"
-                    component = {renderInputField}
-                />
-                <Field
-                    label="Description"
-                    name="description"
-                    component={renderInputField }
-                />
-                <Field
-                    label="Price"
-                    name="price"
-                    component={renderInputField }
-                />
-                <div className="button-wrapper">
-                    <button type="submit"
-                            className="submit-button"
-                            // disabled={isThereValidationErrors}
-                    >
-                        Add
-                    </button>
-                </div>
+        <>
+            <Typography color="textSecondary" variant='h6'>
+                {isAdd ? 'Adding new Item' : `Editing ${formValues.title}`}
+            </Typography>
+            <Card  className={classes.root}>
+                <form onSubmit={handleSubmit}>
+                <CardContent>
+                    <div className={classes.row}>
+                        <TextField
+                            required
+                            error={false}
+                            id="title"
+                            label="Title"
+                            variant="outlined"
+                            size='small'
+                            margin="dense"
+                            value={formData.title}
+                            onChange={e=>handleChange(e.target.value,'title')}
+                        />
+                        <TextField
+                            required
+                            error={false}
+                            type="number"
+                            id="price"
+                            label="Price"
+                            variant="outlined"
+                            size='small'
+                            margin="dense"
+                            className={classes.priceField}
+                            value={formData.price}
+                            onChange={e=>handleChange(e.target.value,'price')}
+                        />
+                    </div>
+                    <TextField
+                        error={false}
+                        id="description"
+                        label="Description"
+                        variant="outlined"
+                        size='small'
+                        fullWidth
+                        margin="dense"
+                        value={formData.description}
+                        onChange={e=>handleChange(e.target.value,'description')}
+
+                    />
+                    <TextField
+                        error={false}
+                        id="imageUrl"
+                        label="ImageUrl"
+                        helperText="url of an image"
+                        variant="outlined"
+                        margin="dense"
+                        value={formData.imageUrl}
+                        onChange={e=>handleChange(e.target.value,'imageUrl')}
+                    />
+                </CardContent>
+                <CardActions className={classes.buttonsWrapper}>
+                    <Button size="small" variant="contained" type='submit'>
+                        {id === null ? 'Add Item' : 'Edit Item'}
+                    </Button>
+                    <Button onClick={cancelHandler}>
+                        Cancel
+                    </Button>
+                </CardActions>
             </form>
         </Card>
+    </>
     )
 }
+//
+// const validate = (formValues: IFormData):FormErrors<IFormData, string> =>{
+//     const errors: FormErrors<IFormData, string> = {};
+//     const {title, description, price} = formValues;
+//     if(!title){
+//         errors.title =  "You should provide a Title"
+//     }
+//     if(!description){
+//         errors.description =  "You should provide Description"
+//     }
+//     if(!price){
+//         errors.price = "You should provide price"
+//     }
+//
+//     return errors;
+// }
 
-const validate = (formValues: IFormData):FormErrors<IFormData, string> =>{
-    const errors: FormErrors<IFormData, string> = {};
-    const {title, description, price} = formValues;
-    if(!title){
-        errors.title =  "You should provide a Title"
-    }
-    if(!description){
-        errors.description =  "You should provide Description"
-    }
-    if(!price){
-        errors.price = "You should provide price"
-    }
 
-    return errors;
-}
 
-export const ItemAddEditWithReduxForm = reduxForm<IFormData,IOwnProps>({
-    validate,
-    form: 'inventory_add'
-})(ItemAddEdit)
-
-export default ItemAddEditWithReduxForm
+export default ItemAddEdit

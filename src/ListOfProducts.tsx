@@ -10,16 +10,17 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         height: 'auto',
         width: 350,
+        maxHeight: '600',
+        overflowX: 'scroll'
     },
 }));
 
 
 const  ListOfProducts : React.FC<{}>= ()=> {
     const classes = useStyles();
-    const products = useSelector((state: RootState)=> {
-        console.log(2234, state.inventory, state.inventory.productIDs.length)
-        return state.inventory.productIDs.map(id => state.inventory.products[id])
-    })
+    const products = useSelector((state: RootState)=>
+        state.inventory.productIDs.map(id => state.inventory.products[id])
+    )
 
     return (
         <Paper variant="outlined" className={classes.paper} >

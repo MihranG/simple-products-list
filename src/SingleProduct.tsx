@@ -9,12 +9,15 @@ const useStyles = makeStyles((theme)=>({
     root: {
         minWidth: 275,
         display: "flex",
-        margin: '5px 0',
+        marginTop: '5px',
         justifyContent: "space-around"
 
     },
+    cardContent: {
+        width: 250
+    },
     productTitle: {
-        // fontSize: 14,
+        fontSize: 18,
         flexGrow: 2
     },
     control: {
@@ -50,7 +53,7 @@ const SingleProduct: React.FC<{ product: IProduct }> = ({product}) => {
                 image={`${process.env.PUBLIC_URL}/${imageUrl}`}
                 title="Item image"
             />
-            <CardContent>
+            <CardContent className={classes.cardContent}>
                 <div className={classes.row}>
                     <Typography className={classes.productTitle} variant="h6" color="textPrimary" >
                         {title}
